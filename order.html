@@ -1,0 +1,199 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>A League Has No Name - Draft Order</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="assets/css/main.css" />
+		<link rel="shortcut icon" type="image/x-icon" href="images/football-ball.ico" />
+		<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
+
+		<script src="assets/js/jquery.min.js"></script>
+		<script src="assets/js/sjcl/sjcl/sjcl.js"></script>
+
+		<link rel="stylesheet" href="assets/highlight/styles/monokai-sublime.css">
+		<script src="assets/highlight/highlight.pack.js"></script>
+		<script>
+		$(document).ready(function() {
+				$('pre code').each(function(i, block) {
+				  hljs.highlightBlock(block);
+				});
+			  });
+		</script>
+		<style>
+			code{
+				border-radius: 4px;
+				box-shadow: 5px 5px 5px 0px rgba(0,0,0,0.5);
+			}
+		</style>
+	</head>
+	<body class="is-preload">
+
+		<!-- Wrapper -->
+			<div id="wrapper">
+
+				<!-- Header -->
+					<header id="header" class="alt">
+						<a href="index.html" class="logo"><strong>ALHNN</strong><span>18</span></a>
+						<nav>
+							<a href="#menu">Menu</a>
+						</nav>
+					</header>
+
+				<!-- Menu -->
+				<nav id="menu">
+						<ul class="links">
+							<li><a href="index.html">Home</a></li>
+							<li><a href="bounties.html">Bounties</a></li>
+							<li><a href="order.html">Draft Order</a></li>
+							<li><a href="recaps.html">Weekly Recaps</a></li>
+						</ul>
+						<ul class="actions stacked">
+							<li><a href="#" class="button primary fit">Go To ESPN.com</a></li>
+						</ul>
+					</nav>
+
+
+				<!-- Main -->
+					<div id="main" class="alt">
+
+						<!-- One -->
+						<section id="one">
+								<div class="inner">
+									<header class="major">
+										<h1 id="title">Draft Order</h1>
+									</header>
+									<span class="image main" id="mainImg"></span>
+
+									<div class="box">
+										<p>Last year's reproducible but not predictable draft order randomizer was a tip of the cap to Bitcoin in that
+											a version of each owner's name was hashed twice with the SHA-256 algorithm (similar to the PoW in Bitcoin).
+										<br><br>
+											This year we are going to encrypt everyone's name using the Stanford JavaScript Crypto Library twice.  This will use the AES-256 symmetric algorithm.  We will first provide an SHA-256 hash of the string "2018" along with each name.  The second pass will use a hash of the string "ALHNN".  Salt and IV will kept constant for all values in order to ensure reproducibility.  The resulting cyphertexts will be sorted in ascending order to produce the draft slots.
+											<br><br>
+											Why just plain old AES?  Well, I wanted to use the ChaCha algorithm because it has such a great name, but there weren't a lot of pure browser implementations of ChaCha (just node.js implementations).
+
+										</p>
+									</div>
+
+									<div id="content">
+											<div class="table-wrapper">
+													<table class="alt">
+														<thead>
+															<tr>
+																<th>Pick</th>
+																<th>Name</th>
+																<th>Final Cyphertext</th>
+															</tr>
+														</thead>
+														<tbody id="order">
+
+														</tbody>
+													</table>
+												</div>
+									</div>
+
+
+
+		<h3>Code used to generate this:</h3>
+		<pre>
+<code class="html">var owners = ["Lindsey","Bronwyn","Mike","Matt Z.","Matthew","Craig","Justin","Raun"];
+var ownerCt = [];
+var hash2018 = sjcl.hash.sha256.hash("2018");
+var hashAlhnn = sjcl.hash.sha256.hash("ALHNN");
+
+owners.forEach(function(name){
+	var salt = btoa( "Fantasy Football" );
+	var iv = "CJq1va3OIottuMkSOAu4pg==";
+		var options = {mode:"ccm",iter:1000,ks:128,ts:64,v:1,cipher:"aes",adata:"",salt:salt,iv:iv}
+
+	let firstPassSjcl = sjcl.encrypt(hash2018,name,options);
+	let firstPass = JSON.parse(sjcl.encrypt(hash2018,name,options)).ct;
+	let secondPass = JSON.parse(sjcl.encrypt(hashAlhnn,firstPass,options)).ct;
+	ownerCt.push({name:name,ct:secondPass});
+
+});
+function compare(a,b) {
+	if (a.ct < b.ct)
+		return -1;
+	if (a.ct > b.ct)
+		return 1;
+	}
+
+sortedOwners = ownerCt.sort(compare);
+console.log("sorted:");
+console.log(sortedOwners);
+var counter = 0;
+sortedOwners.forEach(function(obj){
+	counter++;
+	$("#order").append('<tr><td>'+counter+'</td><td>'+obj.name+'</td><td>'+obj.ct+'</td></tr>');
+});
+</code></pre>
+
+	</section>
+</div>
+
+
+
+
+				<!-- Footer -->
+					<footer id="footer">
+						<div class="inner">
+							<ul class="icons">
+								<li><a href="#" class="icon alt fa-slack"><span class="label">Slack</span></a></li>
+								<!--<li><a href="#" class="icon alt fa-facebook"><span class="label">Facebook</span></a></li>-->
+								<li><a href="#" class="icon alt fa-instagram"><span class="label">Instagram</span></a></li>
+								<li><a href="#" class="icon alt fa-github"><span class="label">GitHub</span></a></li>
+								<!--<li><a href="#" class="icon alt fa-linkedin"><span class="label">LinkedIn</span></a></li>-->
+							</ul>
+							<ul class="copyright">
+								<li>&copy; ALHNN</li><li>Design: <a href="https://craigkilgo.com">CK</a></li>
+							</ul>
+						</div>
+					</footer>
+
+			</div>
+			<script>
+					var owners = ["Lindsey","Bronwyn","Mike","Matt Z.","Matthew","Craig","Justin","Raun"];
+					var ownerCt = [];
+					var hash2018 = sjcl.hash.sha256.hash("2018");
+					var hashAlhnn = sjcl.hash.sha256.hash("ALHNN");
+
+					owners.forEach(function(name){
+						var salt = btoa( "Fantasy Football" );
+						var iv = "CJq1va3OIottuMkSOAu4pg==";
+						  var options = {mode:"ccm",iter:1000,ks:128,ts:64,v:1,cipher:"aes",adata:"",salt:salt,iv:iv}
+
+						let firstPassSjcl = sjcl.encrypt(hash2018,name,options);
+						let firstPass = JSON.parse(sjcl.encrypt(hash2018,name,options)).ct;
+						let secondPass = JSON.parse(sjcl.encrypt(hashAlhnn,firstPass,options)).ct;
+						ownerCt.push({name:name,ct:secondPass});
+
+					});
+					function compare(a,b) {
+						if (a.ct < b.ct)
+							return -1;
+						if (a.ct > b.ct)
+							return 1;
+						}
+
+					sortedOwners = ownerCt.sort(compare);
+					console.log("sorted:");
+					console.log(sortedOwners);
+					var counter = 0;
+					sortedOwners.forEach(function(obj){
+						counter++;
+						$("#order").append('<tr><td>'+counter+'</td><td>'+obj.name+'</td><td>'+obj.ct+'</td></tr>');
+					});
+				</script>
+		<!-- Scripts -->
+
+			<script src="assets/js/jquery.scrolly.min.js"></script>
+			<script src="assets/js/jquery.scrollex.min.js"></script>
+			<script src="assets/js/browser.min.js"></script>
+			<script src="assets/js/breakpoints.min.js"></script>
+			<script src="assets/js/util.js"></script>
+			<script src="assets/js/main.js"></script>
+
+	</body>
+</html>
