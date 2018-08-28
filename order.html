@@ -105,7 +105,15 @@ var hashAlhnn = sjcl.hash.sha256.hash("ALHNN");
 owners.forEach(function(name){
 	var salt = btoa( "Fantasy Football" );
 	var iv = "CJq1va3OIottuMkSOAu4pg==";
-		var options = {mode:"ccm",iter:1000,ks:128,ts:64,v:1,cipher:"aes",adata:"",salt:salt,iv:iv}
+		var options = {mode:"ccm",
+				iter:1000,
+				ks:128,
+				ts:64,
+				v:1,
+				cipher:"aes",
+				adata:"",
+				salt:salt,
+				iv:iv}
 
 	let firstPassSjcl = sjcl.encrypt(hash2018,name,options);
 	let firstPass = JSON.parse(sjcl.encrypt(hash2018,name,options)).ct;
